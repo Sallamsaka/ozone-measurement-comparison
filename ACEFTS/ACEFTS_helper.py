@@ -14,7 +14,7 @@ orbits  = f.variables["orbit"][:].values.astype(int)
 ss  = f.variables["sunset_sunrise"][:].values.astype(int)
 
 #get orbit num and sunrise/sunset num for flags
-flag_file = r"C:\Users\salla\Onedrive(uoft acc)\OneDrive - University of Toronto\Desktop\School Information\NSERC\ACEFTS\ACEFTS_L2_v5p3_flags_Apr2025\ACEFTS_L2_v5p3_flags_O3.nc"
+flag_file = r"C:\Users\salla\Onedrive(uoft acc)\OneDrive - University of Toronto\Desktop\School Information\NSERC\NSERC\ACEFTS\ACEFTS_L2_v5p3_flags_Apr2025\ACEFTS_L2_v5p3_flags_O3.nc"
 f_flags     = xr.open_dataset(flag_file)
 flags       = f_flags["quality_flag"][:]
 orbits_flags    = f_flags.variables["orbit"][:].values.astype(int)

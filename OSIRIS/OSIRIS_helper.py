@@ -4,7 +4,7 @@ from matplotlib import pyplot as pl
 import xarray as xr
 rcParams["font.size"] = 15
 
-directory = r'C:\Users\salla\Onedrive(uoft acc)\OneDrive - University of Toronto\Desktop\School Information\NSERC\OSIRIS'
+directory = r'C:\Users\salla\Onedrive(uoft acc)\OneDrive - University of Toronto\Desktop\School Information\NSERC\NSERC\OSIRIS'
 
 path = directory + r'\*.nc'
 
