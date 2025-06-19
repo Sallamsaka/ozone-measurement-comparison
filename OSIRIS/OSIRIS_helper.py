@@ -42,12 +42,12 @@ def get_density():
     return O3_density
 
 
-def get_column(min_alt, max_alt):
-    return (O3_density * 1000).sel(altitude = slice(min_alt, max_alt)).sum(dim = "altitude")
+def get_column(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
+    return (O3_density * 1000).sel(altitude = slice(min_alt, max_alt)).sum(dim = "altitude") * 6.022e23
 
 
-def get_column_DU(min_alt, max_alt):
-    return get_column(min_alt, max_alt) * (6.022e23 / 2.687e20)
+def get_column_DU(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
+    return get_column(min_alt, max_alt) * 2.687e20
 
 
 def get_time_filtered_vmr(o3, dt1 = "2006-01-01", dt2 = "2020-12-31"):
