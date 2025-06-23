@@ -47,7 +47,7 @@ def get_column(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
 
 
 def get_column_DU(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
-    return get_column(min_alt, max_alt) * 2.687e20
+    return get_column(min_alt, max_alt) / 2.687e20
 
 
 def get_time_filtered_vmr(o3, dt1 = "2006-01-01", dt2 = "2020-12-31"):

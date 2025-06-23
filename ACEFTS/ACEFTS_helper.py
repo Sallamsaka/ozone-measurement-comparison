@@ -7,7 +7,7 @@ rcParams["font.size"] = 15
 ########################################################################################
 #open file
 
-f = xr.open_dataset(r"ACEFTS\ACEFTS_L2_v5p3_O3.nc")
+f = xr.open_dataset(r"C:\Users\salla\Onedrive(uoft acc)\OneDrive - University of Toronto\Desktop\School Information\NSERC\NSERC\ACEFTS\ACEFTS_L2_v5p3_O3.nc")
 
 #get orbit num and sunrise/sunset num
 orbits  = f.variables["orbit"][:].values.astype(int)
@@ -81,7 +81,7 @@ def get_column(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
 
 
 def get_column_DU(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
-    return get_column(min_alt, max_alt) * 2.687e20
+    return get_column(min_alt, max_alt) / 2.687e20
 
 
 def get_temperature():
