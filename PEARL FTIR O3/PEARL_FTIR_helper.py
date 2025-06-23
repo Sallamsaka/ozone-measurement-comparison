@@ -21,6 +21,7 @@ f = xr.open_mfdataset(
 f = f.swap_dims({"idx": "DATETIME"})
 
 f = f.sortby("DATETIME")
+f = f.sortby("altitude1")
 
 O3_vmr = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR"] * 1e-6
 latitude = 80.05
@@ -58,6 +59,7 @@ def get_column(min_alt = None, max_alt = None):
         alt_boundary_diffs = (upper_alt_bounds - lower_alt_bounds)
         lower_alt_bounds = alt_boundaries[1].values
         upper_alt_bounds = alt_boundaries[0].values
+
         min_alt_bound = np.argmin(altitude)
         max_alt_bound = np.argmax(altitude)
         min_proportion = 0
@@ -74,7 +76,7 @@ def get_column(min_alt = None, max_alt = None):
             if min_alt < _min_lower_bounds:
                 pass
             elif lower_bound <= min_alt <= upper_bound:
-                bottom_alt_bound = i+1
+                bottom_alt_bound = i-1
                 min_proportion = (upper_bound - min_alt) / bound_diff
                 min_alt_bound = i
             elif min_alt > _max_upper_bounds:
@@ -84,18 +86,17 @@ def get_column(min_alt = None, max_alt = None):
                 pass
             elif lower_bound <= max_alt <= upper_bound:
                 max_alt_bound = i
-                top_alt_bound = i-1
+                top_alt_bound = i+1
                 max_proportion = (max_alt - lower_bound) / bound_diff
             elif max_alt < _min_lower_bounds:
                 no_column = True
                 break
 
-        _top_slice = slice(top_alt_bound, max_alt_bound + 1)
-        _middle_slice = slice(max_alt_bound, min_alt_bound + 1)
-        _bottom_slice = slice(min_alt_bound, bottom_alt_bound + 1)
+        _top_slice = slice(max_alt_bound, top_alt_bound + 1)
+        _middle_slice = slice(min_alt_bound, max_alt_bound + 1)
+        _bottom_slice = slice(bottom_alt_bound, min_alt_bound + 1)
 
         O3_density = get_density()
-
         O3_column_top = (O3_density.isel(altitude1 = _top_slice) * alt_boundary_diffs.isel(altitude1 = _top_slice)) * max_proportion * 1000
         O3_column = O3_density.isel(altitude1 = _middle_slice) * alt_boundary_diffs.isel(altitude1 = _middle_slice) * 1000
         O3_column_bottom = (O3_density.isel(altitude1 = _bottom_slice) * alt_boundary_diffs.isel(altitude1 = _bottom_slice)) * min_proportion * 1000
