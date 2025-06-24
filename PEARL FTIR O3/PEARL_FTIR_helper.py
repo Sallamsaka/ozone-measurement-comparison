@@ -21,6 +21,12 @@ f = xr.open_mfdataset(
 f = f.swap_dims({"idx": "DATETIME"})
 
 f = f.sortby("DATETIME")
+
+alt_boundaries = f["ALTITUDE.BOUNDARIES"][0].values
+
+alt_boundaries_flat = np.mean(alt_boundaries, axis = 0)
+
+f = f.assign_coords(altitude1 = ("altitude1", alt_boundaries_flat))
 f = f.sortby("altitude1")
 
 O3_vmr = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR"] * 1e-6
@@ -54,18 +60,16 @@ def get_column(min_alt = None, max_alt = None):
         raise Exception("Provide both min and max altitude")
     else:
         alt_boundaries = f["ALTITUDE.BOUNDARIES"][0]
-        lower_alt_bounds = alt_boundaries[1]
-        upper_alt_bounds = alt_boundaries[0]
-        alt_boundary_diffs = (upper_alt_bounds - lower_alt_bounds)
         lower_alt_bounds = alt_boundaries[1].values
         upper_alt_bounds = alt_boundaries[0].values
+        alt_boundary_diffs = (upper_alt_bounds - lower_alt_bounds)
 
-        min_alt_bound = np.argmin(altitude)
-        max_alt_bound = np.argmax(altitude)
+        min_alt_bound = 0
+        max_alt_bound = len(altitude) - 1
         min_proportion = 0
         max_proportion = 0
-        bottom_alt_bound = np.argmin(altitude)
-        top_alt_bound = np.argmax(altitude)
+        bottom_alt_bound = 0
+        top_alt_bound = len(altitude) - 1
         no_column = False
 
         _min_lower_bounds = min(lower_alt_bounds)
@@ -97,9 +101,9 @@ def get_column(min_alt = None, max_alt = None):
         _bottom_slice = slice(bottom_alt_bound, min_alt_bound + 1)
 
         O3_density = get_density()
-        O3_column_top = (O3_density.isel(altitude1 = _top_slice) * alt_boundary_diffs.isel(altitude1 = _top_slice)) * max_proportion * 1000
-        O3_column = O3_density.isel(altitude1 = _middle_slice) * alt_boundary_diffs.isel(altitude1 = _middle_slice) * 1000
-        O3_column_bottom = (O3_density.isel(altitude1 = _bottom_slice) * alt_boundary_diffs.isel(altitude1 = _bottom_slice)) * min_proportion * 1000
+        O3_column_top = (O3_density.isel(altitude1 = _top_slice) * alt_boundary_diffs[_top_slice]) * max_proportion * 1000
+        O3_column = O3_density.isel(altitude1 = _middle_slice) * alt_boundary_diffs[_middle_slice] * 1000
+        O3_column_bottom = (O3_density.isel(altitude1 = _bottom_slice) * alt_boundary_diffs[_bottom_slice]) * min_proportion * 1000
 
         _dim_name = "altitude1"
         O3_partial_column = (O3_column_top.sum(dim = _dim_name) + O3_column.sum(dim = _dim_name) + O3_column_bottom.sum(dim = _dim_name)).where(not no_column, 0)
