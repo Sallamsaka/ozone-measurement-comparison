@@ -1,0 +1,16 @@
+PARENT_FOLDER = r"C:\\Users\\salla\\OneDrive - University of Toronto\\Desktop\\School Information\\NSERC\\NSERC\\O3_ANALYSIS"
+OSIRIS = PARENT_FOLDER + r"\OSIRIS"
+ACEFTS = PARENT_FOLDER + r"\ACEFTS"
+PEARL_FTIR_O3 = PARENT_FOLDER + r"\PEARL_FTIR"
+PROFILE_COMPARISONS = PARENT_FOLDER + r"\PROFILE_COMPARISONS"
+COLUMN_COMPATISONS = PARENT_FOLDER + r"\COLUMN_COMPATISONS"
+
+def path_extender():
+    import sys
+    sys.path.extend([
+        OSIRIS,
+        ACEFTS,
+        PEARL_FTIR_O3,
+        PROFILE_COMPARISONS,
+        COLUMN_COMPATISONS
+    ])
