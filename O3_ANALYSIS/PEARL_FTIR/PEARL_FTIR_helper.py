@@ -87,33 +87,37 @@ def get_column(min_alt=None, max_alt=None):
     
     O3_density = get_density()
 
-    partial_column = xr.zeros_like(O3_density)
+    pre_partial_column = xr.zeros_like(O3_density)
     
     if min_idx == max_idx:
         proportion = (max_alt_clamped - min_alt_clamped) / layer_thickness[min_idx]
-        partial_column[{"altitude1": min_idx}] = ((f["O3.COLUMN.PARTIAL_ABSORPTION.SOLAR"] * 10000).isel(altitude1=min_idx)
+        pre_partial_column[{"altitude1": min_idx}] = ((f["O3.COLUMN.PARTIAL_ABSORPTION.SOLAR"] * 10000).isel(altitude1=min_idx)
             * proportion
         )
     else:
-        partial_column[{"altitude1": min_idx}] = (
+        pre_partial_column[{"altitude1": min_idx}] = (
             O3_density.isel(altitude1=min_idx) 
-            * layer_thickness[min_idx] 
+            * layer_thickness[min_idx]
             * 1000 
             * min_proportion
         )
         
         if max_idx - min_idx > 1:
             mid_slice = slice(min_idx+1, max_idx)
-            partial_column[{"altitude1": mid_slice}] = ((f["O3.COLUMN.PARTIAL_ABSORPTION.SOLAR"] * 10000).isel(altitude1=mid_slice)
+            pre_partial_column[{"altitude1": mid_slice}] = ((f["O3.COLUMN.PARTIAL_ABSORPTION.SOLAR"] * 10000).isel(altitude1=mid_slice)
             )
         
-        partial_column[{"altitude1": max_idx}] = (
+        pre_partial_column[{"altitude1": max_idx}] = (
             O3_density.isel(altitude1=max_idx)
-            * layer_thickness[max_idx] 
-            * 1000 
+            * layer_thickness[max_idx]
+            * 1000
             * max_proportion
         )
-    return partial_column.sum(dim = "altitude1")
+
+    partial_column = pre_partial_column.sum(dim="altitude1", skipna=True)
+    all_nan = pre_partial_column.isnull().all(dim="altitude1")
+    partial_column = partial_column.where(~all_nan)
+    return partial_column
 
 
 def get_column_DU(min_alt = None, max_alt = None):
