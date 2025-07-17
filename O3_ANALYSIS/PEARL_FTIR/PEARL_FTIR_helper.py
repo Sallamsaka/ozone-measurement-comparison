@@ -28,6 +28,37 @@ alt_boundaries_flat = np.mean(alt_boundaries, axis = 0)
 f = f.assign_coords(altitude1 = ("altitude1", alt_boundaries_flat))
 f = f.sortby("altitude1")
 
+alts = f["altitude1"].values
+
+vmr_apriori = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR_APRIORI"].values
+OG_AVKS = np.flip(f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR_AVK"].values, axis = 2)
+AVKS = np.empty(OG_AVKS.shape)
+for i in range(OG_AVKS.shape[0]):
+    og_avk_measurement = OG_AVKS[i]
+    apriori_measurement = np.tile(vmr_apriori[i], (47, 1))
+
+    avk_row = og_avk_measurement * (apriori_measurement / apriori_measurement.T)
+    
+    AVKS[i,:,:] = avk_row
+
+
+sensitivities = np.nansum(AVKS, axis=2)
+sensitive_idx = np.where(sensitivities >= 0.5)
+sensitive_rows = sensitive_idx[0]
+sensitive_columns = sensitive_idx[1]
+
+import pandas as pd
+sensitive_locs = pd.DataFrame(data = {"sensitive_rows": sensitive_rows, "sensitive_columns": sensitive_columns})
+max_sensitive_locs = sensitive_locs.groupby(sensitive_rows).agg(max)
+
+alt_upper_bounds = alts[np.array(max_sensitive_locs["sensitive_columns"])]
+fifth_percentile = np.percentile(alt_upper_bounds, 5)
+
+
+
+
+
+
 O3_vmr = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR"] * 1e-6
 latitude = 80.05
 longitude = -86.42
@@ -124,6 +155,7 @@ def get_column_DU(min_alt = None, max_alt = None):
     _conversion_factor = 2.687e20
     O3_partial_column = get_column(min_alt, max_alt)
     return O3_partial_column / _conversion_factor
+
 
 def get_time_filtered_vmr(o3, dt1 = "2006-01-01", dt2 = "2020-12-31"):
     return o3.sel(DATETIME = slice(dt1, dt2))
