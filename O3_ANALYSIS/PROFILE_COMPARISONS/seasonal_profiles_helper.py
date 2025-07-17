@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-seasonal_months = {"DJeF": [12,1,2], "MAM": [3,4,5], "JJA": [6,7,8], "SON": [9,10,11]}
+seasonal_months = {"DJF": [12,1,2], "MAM": [3,4,5], "JJA": [6,7,8], "SON": [9,10,11]}
 
 class SeasonalHelper:
 
