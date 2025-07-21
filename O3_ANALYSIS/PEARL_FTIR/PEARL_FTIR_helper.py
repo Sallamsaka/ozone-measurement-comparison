@@ -13,7 +13,7 @@ f = xr.open_mfdataset(
     nc_list,
     combine="nested",
     concat_dim="idx",
-    parallel=True,
+    engine="netcdf4",
     decode_cf=True
 )
 
@@ -41,23 +41,11 @@ for i in range(OG_AVKS.shape[0]):
     
     AVKS[i,:,:] = avk_row
 
-
 sensitivities = np.nansum(AVKS, axis=2)
-sensitive_idx = np.where(sensitivities >= 0.5)
-sensitive_rows = sensitive_idx[0]
-sensitive_columns = sensitive_idx[1]
-
-import pandas as pd
-sensitive_locs = pd.DataFrame(data = {"sensitive_rows": sensitive_rows, "sensitive_columns": sensitive_columns})
-max_sensitive_locs = sensitive_locs.groupby(sensitive_rows).agg(max)
-
-alt_upper_bounds = alts[np.array(max_sensitive_locs["sensitive_columns"])]
-fifth_percentile = np.percentile(alt_upper_bounds, 5)
-
-
-
-
-
+sensitivities_mask = sensitivities >= 0.1
+fraction_w_sensitivity = np.nansum(sensitivities_mask, axis = 0)/sensitivities_mask.shape[0]
+upper_alt_idx = max(np.where(fraction_w_sensitivity >= 0.945)[0])
+upper_alt_bound = alts[upper_alt_idx]
 
 O3_vmr = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR"] * 1e-6
 latitude = 80.05
