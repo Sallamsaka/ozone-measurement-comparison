@@ -42,10 +42,12 @@ for i in range(OG_AVKS.shape[0]):
     AVKS[i,:,:] = avk_row
 
 sensitivities = np.nansum(AVKS, axis=2)
-sensitivities_mask = sensitivities >= 0.1
+sensitivities_mask = sensitivities >= 0.5
 fraction_w_sensitivity = np.nansum(sensitivities_mask, axis = 0)/sensitivities_mask.shape[0]
 upper_alt_idx = max(np.where(fraction_w_sensitivity >= 0.945)[0])
 upper_alt_bound = alts[upper_alt_idx]
+# upper_alt_bound = alts[36]
+upper_alt_bound = alts[38]
 
 O3_vmr = f["O3.MIXING.RATIO.VOLUME_ABSORPTION.SOLAR"] * 1e-6
 latitude = 80.05
