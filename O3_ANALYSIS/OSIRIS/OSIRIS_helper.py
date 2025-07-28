@@ -43,18 +43,21 @@ def get_density():
     return O3_density
 
 
-def get_column(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
-    O3_density = get_density()
-    pre_partial_column = (O3_density * 1000).sel(altitude = slice(min_alt, max_alt)) * 6.022e23
-    
-    partial_column = pre_partial_column.sum(dim="altitude", skipna=True)
-    all_nan = pre_partial_column.isnull().all(dim="altitude")
-    partial_column = partial_column.where(~all_nan)
+def get_column(min_alt=None, max_alt=None):
 
+    da = (get_density() * 1000).sel(altitude=slice(min_alt, max_alt))
+    
+    valid_mask = ~da.isnull().any(dim='altitude')
+    
+    pre_partial_column = da * 6.022e23
+    partial_column = pre_partial_column.sum(dim="altitude", skipna=False)
+    
+    partial_column = partial_column.where(valid_mask)
+    
     return partial_column
 
 
-def get_column_DU(min_alt = f.altitude.min(), max_alt = f.altitude.max()):
+def get_column_DU(min_alt=None, max_alt=None):
     column = get_column(min_alt, max_alt)
     return column / 2.687e20
 
