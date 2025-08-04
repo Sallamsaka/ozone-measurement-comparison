@@ -192,16 +192,10 @@ cython_debug/
 *.xlsx
 *.csv
 *.hdf
-App Downloads/
-HDFView-3.3.2-win64/
-Introduction to Atmospheric Physics/
+*.docx
+Apps/
+Articles and Reports/
 PanoplyWin-5.6.0/
-UsersGuide/
+Documentation/
 .vscode/
-ACEFTS/__pycache__
-OSIRIS/__pycache__
-Saka_Abdul-Sallam Chukwusom_605517_June 24, 2025/
-learning_python.ipynb
-csc148.ipynb
 !Final Report.pdf
-Final Report.docx
