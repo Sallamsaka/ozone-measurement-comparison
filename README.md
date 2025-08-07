@@ -15,3 +15,4 @@ This repository contains the code I used to process and validate 1.2 million+ oz
 - Engineered pipeline modules for quality-flag filtering, unit conversion, and spatiotemporal matching to ensure comparability.
 - Calculated absolute/relative differences, Pearson correlation coefficients, and linear trends to quantify inter-instrument biases. 
 - Generated 310+ Matplotlib plots (time series, climatology maps, scatter) to reveal spatial and temporal discrepancy patterns.
+- Communicated findings via a midterm group presentation and final report.
